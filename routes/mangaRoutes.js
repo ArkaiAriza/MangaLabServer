@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const axios = require("axios");
 
 router.post("/manga", async (req, res) => {
   let { id = "" } = req.body;
@@ -8,10 +9,9 @@ router.post("/manga", async (req, res) => {
     const response = await axios.get(
       `https://www.mangaeden.com/api/manga/${id}`
     );
-    console.log(response);
-    res.send(response);
+    res.send(response.data);
   } catch (err) {
-    console.log("sorry");
+    console.log(err);
     res.status(500);
   }
 });
