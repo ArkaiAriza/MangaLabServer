@@ -1,9 +1,9 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const axios = require("axios");
+const axios = require('axios');
 
-router.post("/manga", async (req, res) => {
-  let { id = "" } = req.body;
+router.post('/api/manga', async (req, res) => {
+  let { id = '' } = req.body;
   console.log(id);
   try {
     const response = await axios.get(

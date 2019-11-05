@@ -1,13 +1,13 @@
-const express = require("express");
-const axios = require("axios");
-const fs = require("fs");
-const mangas = require("../info/mangas.json");
+const express = require('express');
+const axios = require('axios');
+const fs = require('fs');
+const mangas = require('../info/mangas.json');
 
 const router = express.Router();
 
-router.post("/filter", async (req, res) => {
-  console.log("asd");
-  let { term = "", page = 0, nItems = 20 } = req.body;
+router.post('/api/filter', async (req, res) => {
+  console.log('asd');
+  let { term = '', page = 0, nItems = 20 } = req.body;
 
   const reg = new RegExp(`(?:${term.toLowerCase()})`);
 
