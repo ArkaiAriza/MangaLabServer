@@ -1,9 +1,13 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react';
+import styled from 'styled-components';
 
-import { Image } from "semantic-ui-react";
-import { LabelGroup } from "./";
-import { HoverInfo } from "./";
+import { Image } from 'semantic-ui-react';
+import { LabelGroup } from './';
+import { HoverInfo } from './HoverInfo';
+
+const StyledHoverInfo = styled(HoverInfo)`
+  transition: top 300ms, height 300ms, visibility 10ms;
+`;
 
 const StyledCard = styled.div`
   display: flex;
@@ -17,6 +21,12 @@ const StyledCard = styled.div`
   height: 400px;
   max-height: 400px;
   background: #181818;
+  transition: color 2s, top 2s;
+  :hover ${StyledHoverInfo} {
+    top: 0px;
+    height: 400px;
+    visibility: visible;
+  }
 `;
 
 const StyledImage = styled(Image)`
@@ -58,31 +68,22 @@ class Card extends React.Component {
     //console.log(this.state.hover);
     return (
       <StyledCard
+        className={this.props.className}
         ref={this.hover}
         onMouseEnter={() => this.setState({ hover: true })}
-        onMouseLeave={() => this.setState({ hover: false })}
+        //onMouseLeave={() => this.setState({ hover: false })}
       >
         <StyledImage
           src={`https://cdn.mangaeden.com/mangasimg/${this.props.manga.im}`}
           onError={ev =>
             (ev.target.src =
-              "http://hwr.org.uk/wp-content/uploads/2016/11/placeholder-dark-600-400-729dad18518ecd2cd47afb63f9e6eb09.jpg")
+              'http://hwr.org.uk/wp-content/uploads/2016/11/placeholder-dark-600-400-729dad18518ecd2cd47afb63f9e6eb09.jpg')
           }
         />
         <TitleContainer>
           <Title>{this.props.manga.t}</Title>
         </TitleContainer>
-        {this.state.hover && (
-          <HoverInfo
-            id={this.props.manga.i}
-            right={
-              this.hover.current.getBoundingClientRect().x + 440 <=
-              window.innerWidth
-                ? true
-                : false
-            }
-          />
-        )}
+        <StyledHoverInfo id={this.props.manga.i} />
       </StyledCard>
     );
   }
