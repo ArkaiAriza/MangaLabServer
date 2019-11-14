@@ -17,15 +17,25 @@ const StyledCard = styled.div`
   margin: 2em 1em;
   width: 220px;
   max-width: 100%;
-  min-height: 400px;
-  height: 400px;
-  max-height: 400px;
+  min-height: 350px;
+  height: 350px;
+  max-height: 350px;
   background: #181818;
-  transition: color 2s, top 2s;
-  :hover ${StyledHoverInfo} {
+`;
+
+const TitleContainer = styled.div`
+  background-color: #303030;
+  position: absolute;
+  padding: 1em 1em;
+  top: 300px;
+  height: 50px;
+  transition: top 300ms, height 300ms, background-color 300ms;
+  width: 220px;
+
+  ${StyledCard}:hover & {
     top: 0px;
-    height: 400px;
-    visibility: visible;
+    height: 350px;
+    background-color: #303030f5;
   }
 `;
 
@@ -34,11 +44,6 @@ const StyledImage = styled(Image)`
   object-fit: contain;
   width: 290px;
   height: 300px;
-`;
-
-const TitleContainer = styled.div`
-  background-color: #303030;
-  padding: 1em 1em;
 `;
 
 const Title = styled.h2`
@@ -65,13 +70,12 @@ class Card extends React.Component {
   }
 
   render() {
-    //console.log(this.state.hover);
     return (
       <StyledCard
         className={this.props.className}
         ref={this.hover}
         onMouseEnter={() => this.setState({ hover: true })}
-        //onMouseLeave={() => this.setState({ hover: false })}
+        onMouseLeave={() => this.setState({ hover: false })}
       >
         <StyledImage
           src={`https://cdn.mangaeden.com/mangasimg/${this.props.manga.im}`}
@@ -80,10 +84,14 @@ class Card extends React.Component {
               'http://hwr.org.uk/wp-content/uploads/2016/11/placeholder-dark-600-400-729dad18518ecd2cd47afb63f9e6eb09.jpg')
           }
         />
-        <TitleContainer>
+        {/* <TitleContainer>
           <Title>{this.props.manga.t}</Title>
-        </TitleContainer>
-        <StyledHoverInfo id={this.props.manga.i} />
+        </TitleContainer> */}
+        <HoverInfo
+          manga={this.props.manga}
+          //hover={this.state.hover}
+          hover
+        ></HoverInfo>
       </StyledCard>
     );
   }

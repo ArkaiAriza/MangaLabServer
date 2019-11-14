@@ -1,56 +1,132 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
+import { Loader } from 'semantic-ui-react';
+import { LabelGroup } from './';
 
 const Info = styled.div`
   position: absolute;
-  background-color: #222222f0;
-  border: 1;
-  border-color: #909090;
-  top: 400px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   width: 220px;
-  z-index: 100px;
-  height: 0px;
-  visibility: hidden;
+  padding: 10px 1em 0;
+  top: ${props => (props.hover ? '0px' : '300px')};
+  height: ${props => (props.hover ? '350px' : '50px')};
+
   color: white;
-  transition: color 300ms, top 300ms, height 2s;
+  background-color: ${props => (props.hover ? '#303030f5' : '#303030')};
+
+  transition: top 300ms, height 300ms, background-color 300ms;
 `;
 
-class HoverInfo extends React.Component {
-  state = { loading: false, manga: null };
+const Title = styled.h2`
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex-shrink: 0;
+  color: white;
+  margin: 0px;
+`;
 
-  componentDidMount = async () => {
-    this.setState({ loading: true });
+const Description = styled.p`
+  overflow: hidden;
+  color: white;
+  flex: 1 1 30%;
+  overflow: hidden;
+  font-weight: 100;
+  padding-top: 20px;
+`;
+
+const Author = styled.h5`
+  color: #ccc;
+  flex-shrink: 1;
+  overflow: hidden;
+  margin: 0;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  color: #ccc;
+  flex-grow: 0;
+  justify-content: space-between;
+  padding-bottom: 10px;
+`;
+
+const StyledLabelGroup = styled(LabelGroup)``;
+
+function HoverInfo({ manga, hover, className }) {
+  const [loading, setLoading] = useState(false);
+  const [fetchedManga, setFetchedManga] = useState({ error: null });
+
+  const fetchData = async () => {
     const res = await axios.post('/api/manga', {
-      id: this.props.id
+      id: manga.i
     });
-    console.log(res);
-    this.setState({ loading: false, manga: res.data });
+    return res.data;
   };
 
-  render() {
-    const { className } = this.props;
+  useEffect(() => {
+    if (hover && fetchedManga.error !== false) {
+      setLoading(true);
+      fetchData()
+        .then(data => {
+          setFetchedManga({ ...data, error: false });
+          setLoading(false);
+        })
+        .catch(() => {
+          setFetchedManga({ error: true });
+        });
+    }
+  }, [hover]);
 
-    if (this.state.loading) {
-      return (
-        <Info className={className} right={this.props.right}>
-          <div>Loading</div>
-        </Info>
-      );
-    }
-    if (!this.state.manga) {
-      return (
-        <Info className={className} right={this.props.right}>
-          <div>ERROR</div>
-        </Info>
-      );
-    }
+  console.log(fetchedManga);
+
+  if (loading) {
     return (
-      <Info className={className} right={this.props.right}>
-        <div>{this.state.manga.title}</div>
+      <Info hover={hover}>
+        <Title>{fetchedManga.title ? fetchedManga.title : manga.t}</Title>
+        <Description>
+          {hover && <Loader active style={{ position: 'relative' }} />}
+        </Description>
       </Info>
     );
   }
+  if (fetchedManga.error) {
+    return (
+      <Info className={className} hover={hover}>
+        <Title>{fetchedManga.title ? fetchedManga.title : manga.t}</Title>
+        <Description>ERROR</Description>
+      </Info>
+    );
+  }
+
+  return (
+    <Info className={className} hover={hover}>
+      <Title>{fetchedManga.title ? fetchedManga.title : manga.t}</Title>
+
+      <Author>{`${fetchedManga.artist}${
+        fetchedManga.artist === fetchedManga.author
+          ? ''
+          : ` ${fetchedManga.author}`
+      }`}</Author>
+      <Description>
+        {fetchedManga.error !== null
+          ? `${fetchedManga.description.substr(0, 200)} ...`
+          : ''}
+      </Description>
+
+      <Wrapper>
+        <div>{`${fetchedManga.chapters_len} chapters`}</div>
+        <div>Favorites</div>
+      </Wrapper>
+      <StyledLabelGroup
+        labels={fetchedManga.categories}
+        limit={3}
+      ></StyledLabelGroup>
+    </Info>
+  );
 }
 
 export { HoverInfo };

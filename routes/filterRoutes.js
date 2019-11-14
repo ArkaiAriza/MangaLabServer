@@ -6,7 +6,7 @@ const mangas = require('../info/mangas.json');
 const router = express.Router();
 
 router.post('/api/filter', async (req, res) => {
-  console.log('asd');
+  //console.log('asd');
   let { term = '', page = 0, nItems = 20 } = req.body;
 
   const reg = new RegExp(`(?:${term.toLowerCase()})`);
