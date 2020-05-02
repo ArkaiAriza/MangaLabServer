@@ -1,12 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { Container, Grid, Image } from 'semantic-ui-react';
 
 import { Card } from './common/';
-
-import MangaCard from './MangaCard';
 
 const StyledContainer = styled.div`
   display: flex;

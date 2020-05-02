@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Icon, Loader } from 'semantic-ui-react';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -28,6 +28,7 @@ const StyledSearch = styled.div`
 
 const StyledInput = styled.input`
   flex: 1;
+  padding-left: 10%;
   color: #d4d4d5;
   background-color: #303030;
   border-width: 0;
@@ -43,89 +44,66 @@ const ResultsContainer = styled.div`
   min-height: 100px;
   max-height: 100%;
   background-color: #0000;
-  justify-content: flex-start;
+  justify-content: center;
   padding: 1rem 1rem 1rem 1rem;
-  @media (max-width: 1468px) {
-    justify-content: center;
-  }
 `;
 
-const StyledLoader = styled(Loader)`
+const StyledLoader = styled.div`
   position: relative;
-  transform: none;
-  left: 0;
-  top: 0;
   width: 100%;
-  align-self: center;
 `;
 
-class Search extends React.Component {
-  state = {
-    inputFocus: false,
-    searchTerm: 'one',
-    searchResults: [],
-    isLoading: false
-  };
+const Search = () => {
+  const [searchTerm, setSearchTerm] = useState('one');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  handleChange = searchTerm => {
-    this.setState({ ...this.state, searchTerm }, async () => {
-      if (this.state.searchTerm.length >= 3) {
-        this.setState({ isLoading: true });
-        const res = await axios.post('/api/filter', {
-          term: searchTerm,
-          page: 0,
-          nItems: 6
-        });
-        this.setState({ isLoading: false });
-        this.setState({ searchResults: res.data });
-      } else {
-        this.setState({ searchResults: [] });
-      }
+  const fetchData = async () => {
+    setIsLoading(true);
+    const res = await axios.post('/api/filter', {
+      term: searchTerm,
+      page: 0,
+      nItems: 6
     });
+    return res.data;
   };
 
-  componentDidMount = async () => {
-    if (this.state.searchTerm.length >= 3) {
-      const res = await axios.post('/api/filter', {
-        term: this.state.searchTerm,
-        page: 0,
-        nItems: 6
+  useEffect(() => {
+    if (searchTerm.length >= 3) {
+      fetchData().then(data => {
+        setSearchResults(data);
       });
-      this.setState({ searchResults: res.data });
     } else {
-      this.setState({ searchResults: [] });
+      setSearchResults([]);
     }
-  };
+    setIsLoading(false);
+  }, [searchTerm]);
 
-  renderResults = () => {
-    if (this.state.isLoading) {
-      return <StyledLoader active inverted />;
+  function renderResults() {
+    if (isLoading) {
+      return (
+        <StyledLoader>
+          <Loader active inverted />
+        </StyledLoader>
+      );
     }
-    return this.state.searchResults.map(manga => {
-      return <Result manga={manga} />;
+    return searchResults.map(manga => {
+      return <Result id={manga.id} manga={manga} />;
     });
-  };
-
-  render() {
-    return (
-      <StyledContainer>
-        <StyledSearch>
-          <Icon
-            name="search"
-            size="large"
-            color="grey"
-            inverted
-            style={{ marginRight: '10%' }}
-          />
-          <StyledInput
-            value={this.state.searchTerm}
-            onChange={event => this.handleChange(event.target.value)}
-          />
-        </StyledSearch>
-        <ResultsContainer>{this.renderResults()}</ResultsContainer>
-      </StyledContainer>
-    );
   }
-}
+
+  return (
+    <StyledContainer>
+      <StyledSearch>
+        <Icon name="search" size="large" color="grey" inverted />
+        <StyledInput
+          value={searchTerm}
+          onChange={event => setSearchTerm(event.target.value)}
+        />
+      </StyledSearch>
+      <ResultsContainer>{renderResults()}</ResultsContainer>
+    </StyledContainer>
+  );
+};
 
 export default Search;

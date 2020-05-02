@@ -1,7 +1,14 @@
 import React from 'react';
-import { Grid, Card, Image, Label, Icon, Accordion } from 'semantic-ui-react';
+import { Label } from 'semantic-ui-react';
+import styled from 'styled-components';
 
-const LabelGroup = ({ labels, limit }) => {
+const Group = styled(Label.Group)`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const LabelGroup = ({ labels, limit, className }) => {
   const labelGroup = [];
 
   if (limit == -1) {
@@ -17,17 +24,9 @@ const LabelGroup = ({ labels, limit }) => {
   }
 
   return (
-    <Label.Group
-      size="mini"
-      color="black"
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-      }}
-    >
+    <Group className={className} size="mini" color="black" style={{}}>
       {labelGroup}
-    </Label.Group>
+    </Group>
   );
 };
 

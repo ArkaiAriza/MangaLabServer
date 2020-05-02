@@ -1,13 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import { Image } from 'semantic-ui-react';
-import { LabelGroup } from './';
 import { HoverInfo } from './HoverInfo';
-
-const StyledHoverInfo = styled(HoverInfo)`
-  transition: top 300ms, height 300ms, visibility 10ms;
-`;
+import { Link } from 'react-router-dom';
 
 const StyledCard = styled.div`
   display: flex;
@@ -23,22 +19,6 @@ const StyledCard = styled.div`
   background: #181818;
 `;
 
-const TitleContainer = styled.div`
-  background-color: #303030;
-  position: absolute;
-  padding: 1em 1em;
-  top: 300px;
-  height: 50px;
-  transition: top 300ms, height 300ms, background-color 300ms;
-  width: 220px;
-
-  ${StyledCard}:hover & {
-    top: 0px;
-    height: 350px;
-    background-color: #303030f5;
-  }
-`;
-
 const StyledImage = styled(Image)`
   flex: 1;
   object-fit: contain;
@@ -46,55 +26,28 @@ const StyledImage = styled(Image)`
   height: 300px;
 `;
 
-const Title = styled.h2`
-  color: white;
-  font-size: 1.28rem;
-`;
+const Card = ({ className, manga }) => {
+  const [hover, setHover] = useState(false);
 
-class Card extends React.Component {
-  state = { hover: false };
-  hover = React.createRef();
-
-  renderCategories() {
-    /* return this.props.manga.c.map(c => {
-      return (
-        <Label as="a" color="black">
-          {c}
-        </Label>
-      );
-    }); */
-
-    const { c } = this.props.manga;
-
-    return <LabelGroup labels={c} limit={3} />;
-  }
-
-  render() {
-    return (
+  return (
+    <Link to={`/manga/${manga.i}`}>
       <StyledCard
-        className={this.props.className}
-        ref={this.hover}
-        onMouseEnter={() => this.setState({ hover: true })}
-        onMouseLeave={() => this.setState({ hover: false })}
+        className={className}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
       >
         <StyledImage
-          src={`https://cdn.mangaeden.com/mangasimg/${this.props.manga.im}`}
+          src={`https://cdn.mangaeden.com/mangasimg/${manga.im}`}
           onError={ev =>
             (ev.target.src =
               'http://hwr.org.uk/wp-content/uploads/2016/11/placeholder-dark-600-400-729dad18518ecd2cd47afb63f9e6eb09.jpg')
           }
         />
-        {/* <TitleContainer>
-          <Title>{this.props.manga.t}</Title>
-        </TitleContainer> */}
-        <HoverInfo
-          manga={this.props.manga}
-          //hover={this.state.hover}
-          hover
-        ></HoverInfo>
+
+        <HoverInfo manga={manga} hover={hover}></HoverInfo>
       </StyledCard>
-    );
-  }
-}
+    </Link>
+  );
+};
 
 export { Card };
